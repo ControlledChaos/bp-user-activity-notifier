@@ -37,14 +37,10 @@ class BDBP_User_Local_Notifier implements BDBP_User_Activity_Notifier {
 	 */
 	public function delete( $activities ) {
 
-		$activity_ids = wp_list_pluck( $activities, 'id' );
+		$user_id = bp_loggedin_user_id();
 
-		foreach ( $activity_ids as $activity_id ) {
-
-			BP_Notifications_Notification::delete( array(
-				'component'         => 'bdbp_unotifier',
-				'secondary_item_id' => $activity_id
-			) );
+		foreach ( $activities as $activity ) {
+			$this->visited( $activity, $user_id );
 		}
 
 	}
@@ -57,15 +53,8 @@ class BDBP_User_Local_Notifier implements BDBP_User_Activity_Notifier {
 	 */
 	public function visited( $activity, $user_id ) {
 
-		BP_Notifications_Notification::update( array(
-			'is_new'         => 0
-			),
-			array(
-				'secondary_item_id' => $activity->id,
-				'component_name'    => 'bdbp_unotifier',
-				'user_id'           => $user_id
-			)
-		);
+		bp_core_delete_notifications_by_item_id( $user_id, $activity->user_id,  'bdbp_unotifier','new_update', $activity->id );
+
 	}
 
 	/**
@@ -78,10 +67,7 @@ class BDBP_User_Local_Notifier implements BDBP_User_Activity_Notifier {
 	 * @return bool|int
 	 */
 	public function add_notification( $user_id, $related_user_id, $activity_id ) {
-
 		return bp_core_add_notification( $related_user_id, $user_id, 'bdbp_unotifier', 'new_update', $activity_id );
-
 	}
-
 
 }

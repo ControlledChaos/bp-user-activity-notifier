@@ -79,13 +79,8 @@ class BDBP_User_Local_Notifier implements BDBP_User_Activity_Notifier {
 	 */
 	public function add_notification( $user_id, $related_user_id, $activity_id ) {
 
-		return bp_notifications_add_notification( array(
-			'item_id'           => $related_user_id,
-			'secondary_item_id' => $activity_id,
-			'user_id'           => $user_id,
-			'component_name'    => 'bdbp_unotifier',//buddyPress user notifier in short
-			'component_action'  => 'new_update'//we may need to update it?
-		) );
+		return bp_core_add_notification( $related_user_id, $user_id, 'bdbp_unotifier', 'new_update', $activity_id );
+
 	}
 
 
